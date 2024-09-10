@@ -1,4 +1,4 @@
-module PCNN
+module PCNK
 dir = @__DIR__
 src = string(dir, "/src")
 using GenericLinearAlgebra, LinearAlgebra, Polynomials, SpecialFunctions, ArrayAllocators, SphericalHarmonics, KernelFunctions, ChainRules, JLD2,Lebedev, Functors, Optimisers, FFTW, Flux, KernelAbstractions
