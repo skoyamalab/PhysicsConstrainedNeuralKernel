@@ -16,7 +16,7 @@ using .PCNK
 T = Float32
 
 # The first step is to load the data
-data = JLD2.load(string(DIR, "/400ms/Example.jld"))
+data = JLD2.load(string(DIR, "/400ms/SPM.jld"))
 freqs = data["freqs"]
 c = T(343)
 ks = T.(2*π*freqs/c)
