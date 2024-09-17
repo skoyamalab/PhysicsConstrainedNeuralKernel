@@ -56,15 +56,8 @@ All of these operations are implemented without scalar indexing or mutations and
 
 ## Types of kernels available
 
-The library supports several kernel models. For example, there are uniform kernels meaning the spherical Bessel kernel:
-
-$$
-\kappa_uni(\mathbf{x}, \mathbf{x}^\prime) = j_0(k\|\mathbf{x} - \mathbf{x}^\prime\|),
-$$
-
-
-where $k$ is the wave number. This kernel represents the kernel function of an infinite-dimensional reproducing kernel Hilbert space where all functions satisfy the Helmholtz equation.
+The library supports several kernel models, [explained](10.1109/LSP.2017.2775242) [in depth](10.1109/ICASSP40776.2020.9053416) [in these](10.1109/WASPAA52581.2021.9632731) [papers](10.36227/techrxiv.24455380.v2). The instantiation of each kernel is explained in the source files in PCNK/src/Kernels.
 
 ## Hands-on example
 
-The file SPM.jl shows how to instantiate and train our kernels by performing interpolation on a simulated sound field created to have reverberation time of $400~\mathrm{ms}$. We contrast a fully adaptive physics-constrained neural kernel proposed in [this paper](https://doi.org/10.48550/arXiv.2408.14731) with a uniform kernel that does no training whatsoever.
+The file SPM.jl shows how to instantiate and train our kernels by performing interpolation on a simulated sound created to have reverberation time of $400~\mathrm{ms}$. We contrast a fully adaptive physics-constrained neural kernel proposed in [this paper](https://doi.org/10.48550/arXiv.2408.14731) with a uniform kernel that does no training whatsoever. The results of the comparison run can be seen in the 400ms/GRAPHS folder.
