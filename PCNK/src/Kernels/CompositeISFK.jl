@@ -84,7 +84,39 @@ function (a::CompositeKernel)(x1::AbstractVecOrMat{<:Number}, x2::AbstractVecOrM
     return a.NeuralKernel(x1, x2) + a.AnalyticalKernel(x1, x2)
 end
 
+# Implementation of a fully plane-wave-based kernel mixing an analytical plane wave kernel with a fixed number of directions with an auxilliary neural kernel.
+
+mutable struct NeuralAugmentedKernel{T<:AbstractFloat, N<:Integer} <: CompositeKernel{T}
+    AnalyticalKernel::UniformKernel{T}
+    NeuralKernel::NeuralWeightPlaneWaveKernel{T, N}
+end
+
+# Constructors require the same as the previous case.
+
+function NeuralAugmentedKernel{T, N}(k::U, Ord::Integer, W=W0) where {T<:AbstractFloat, N<:Integer, U<:Number}
+    return NeuralAugmentedKernel{T, N}(UniformKernel{T}(k), NeuralWeightPlaneWaveKernel{T, N}(k, Ord, W))
+end
+
+function NeuralAugmentedKernel{T}(k::U, Ord::N, W=W0) where {T<:AbstractFloat, N<:Integer, U<:Number}
+    return NeuralAugmentedKernel{T, N}(UniformKernel{T}(k), NeuralWeightPlaneWaveKernel{T, N}(k, Ord, W))
+end
+
+function NeuralAugmentedKernel(k::T, Ord::N, W=W0) where {T<:AbstractFloat, N<:Integer}
+    return NeuralAugmentedKernel{T, N}(UniformKernel{T}(k), NeuralWeightPlaneWaveKernel{T, N}(k, Ord, W))
+end
+
+# Implementations (thankfully it works for all of them)
+
+function (a::CompositeKernel)(ΔX::AbstractArray{<:Number})
+    return a.NeuralKernel(ΔX)+ a.AnalyticalKernel(ΔX)
+end
+
+function (a::CompositeKernel)(x1::AbstractVecOrMat{<:Number}, x2::AbstractVecOrMat{<:Number})
+    return a.NeuralKernel(x1, x2) + a.AnalyticalKernel(x1, x2)
+end
+
 # Flux management
 @functor DirectedResidualKernel
 @functor PlaneWaveCompositeKernel
+@functor NeuralAugmentedKernel
 trainable(a::CompositeKernel) = (; a.AnalyticalKernel, a.NeuralKernel)

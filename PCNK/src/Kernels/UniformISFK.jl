@@ -56,7 +56,9 @@ end
 
 ### Kernel evaluation for two batches of inputs
 function (a::UniformKernel)(X1::AbstractMatrix{<:Number}, X2::AbstractMatrix{<:Number})::AbstractMatrix
-    @tullio (+) ΔX[b1, b2] := (X1[t, b1] - X2[t, b2])^2
+    B1 = size(X1, 2)
+    B2 = size(X2, 2)
+    ΔX = reshape(sum(abs2, reshape(X1, :, B1, 1) .- reshape(X2, :, 1, B2), dims=1), B1, B2)
     return j0.(a.k*sqrt.(ΔX))
 end
 

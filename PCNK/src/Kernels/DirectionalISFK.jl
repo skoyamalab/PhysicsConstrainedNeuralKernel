@@ -82,9 +82,10 @@ function (a::FixedDirectionSFKernel{T})(x1::AbstractVector{T}, X2::AbstractMatri
 end
 
 function (a::FixedDirectionSFKernel)(X1::AbstractMatrix{<:Number}, X2::AbstractMatrix{<:Number})::AbstractMatrix
-    @tullio Δx[t, b1, b2] := X1[t, b1] - X2[t, b2]
-    D, B1, B2 = size(Δx)
-    ΔX = sqrt.(reshape(sum((Complex.(a.k*Δx) - im*repeat(reshape(a.β .*a.v, (D,1,1)), 1, B1, B2)).^2, dims=1), B1, B2))
+    B1 = size(x1, 2)
+    B2 = size(x2, 2)
+    Δx = reshape(X1, :, B1, 1) .- reshape(X2, :, 1, B2)
+    ΔX = sqrt.(reshape(sum((Complex.(a.k*Δx) - im*repeat(reshape(a.β .*a.v, :, 1, 1), 1, B1, B2)).^2, dims=1), B1, B2))
     return j0.(ΔX)./i0.(a.β)
 end
 
@@ -145,9 +146,10 @@ function (a::VariableDirectionSFKernel)(x1::AbstractVector{<:Number}, X2::Abstra
 end
 
 function (a::VariableDirectionSFKernel)(X1::AbstractMatrix{<:Number}, X2::AbstractMatrix{<:Number})::AbstractMatrix
-    @tullio Δx[t,b1,b2] := X1[t, b1] - X2[t, b2]
-    D, B1, B2 = size(Δx)
-    ΔX = sqrt.(reshape(sum((Complex.(a.k*Δx) - im*repeat(reshape(a.β, (D,1,1)), 1, B1, B2)).^2, dims=1), (B1, B2)))
+    B1 = size(X1, 2)
+    B2 = size(X2, 2)
+    Δx = reshape(X1, :, B1, 1) .- reshape(X2, :, 1, B2)
+    ΔX = sqrt.(reshape(sum((Complex.(a.k*Δx) - im*repeat(reshape(a.β, :, 1, 1), 1, B1, B2)).^2, dims=1), (B1, B2)))
     return j0.(ΔX)/i0(norm(a.β))
 end
 

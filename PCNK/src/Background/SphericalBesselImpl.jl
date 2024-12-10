@@ -14,7 +14,7 @@
 
 # Zero order spherical Bessel function of the first kind.
 
-function j0(x::T) where {T<:Number}
+function j0(x::T)::float(T) where {T <: Union{AbstractFloat, Integer, Complex{<:AbstractFloat}, Complex{<:Integer}}}
     if iszero(x)
         return one(x)
     else
@@ -26,7 +26,7 @@ end
 # all of these functions are continuous and infinitely differentiable, but telling the compiler
 # that can be challenging.
 
-function dj0(x::T) where {T<:Number}
+function dj0(x::T)::float(T) where {T <: Union{AbstractFloat, Integer, Complex{<:AbstractFloat}, Complex{<:Integer}}}
     if iszero(x)
         return zero(x)
     else
@@ -34,7 +34,7 @@ function dj0(x::T) where {T<:Number}
     end
 end
 
-function d2j0(x::T) where {T<:Number}
+function d2j0(x::T)::float(T) where {T <: Union{AbstractFloat, Integer, Complex{<:AbstractFloat}, Complex{<:Integer}}}
     if iszero(x)
         return -one(x)/3
     else
@@ -42,7 +42,7 @@ function d2j0(x::T) where {T<:Number}
     end
 end
 
-function d3j0(x::T) where {T<:Number}
+function d3j0(x::T)::float(T) where {T <: Union{AbstractFloat, Integer, Complex{<:AbstractFloat}, Complex{<:Integer}}}
     if iszero(x)
         return zero(x)
     else
@@ -58,9 +58,58 @@ end
 @scalar_rule(dj0(x), (d2j0(x)))
 @scalar_rule(j0(x), (dj0(x)))
 
+# Dual implementations for the Bessel functions for compatibility with ForwardDiff.jl, since that is the one differentiation backend that does not work directly with ChainRules.jl
+
+function j0(xdx::Dual{T}) where {T}
+    x = value(xdx)
+    dx = partials(xdx)
+    return Dual{T}(j0(x), dj0(x)*dx)
+end
+
+function dj0(xdx::Dual{T}) where {T}
+    x = value(xdx)
+    dx = partials(xdx)
+    return Dual{T}(dj0(x), d2j0(x)*dx)
+end
+
+function d2j0(xdx::Dual{T}) where {T}
+    x = value(xdx)
+    dx = partials(xdx)
+    return Dual{T}(d2j0(x), d3j0(x)*dx)
+end
+
+# Complex dual implementation
+
+function j0(zdz::Complex{D}) where {D<:Dual}
+    z = value(zdz.re) + im*value(zdz.im)
+    dz_re = partials(zdz.re)
+    dz_im = partials(zdz.im)
+    j = j0(z)
+    dj = dj0(z)
+    return D(j.re, dj.re*dz_re - dj.im*dz_im) + im*D(j.im, dj.re*dz_im + dj.im*dz_re)
+end
+
+function dj0(zdz::Complex{D}) where {D<:Dual}
+    z = value(zdz.re) + im*value(zdz.im)
+    dz_re = partials(zdz.re)
+    dz_im = partials(zdz.im)
+    j = dj0(z)
+    dj = d2j0(z)
+    return D(j.re, dj.re*dz_re - dj.im*dz_im) + im*D(j.im, dj.re*dz_im + dj.im*dz_re)
+end
+
+function d2j0(zdz::Complex{D}) where {D<:Dual}
+    z = value(zdz.re) + im*value(zdz.im)
+    dz_re = partials(zdz.re)
+    dz_im = partials(zdz.im)
+    j = d2j0(z)
+    dj = d3j0(z)
+    return D(j.re, dj.re*dz_re - dj.im*dz_im) + im*D(j.im, dj.re*dz_im + dj.im*dz_re)
+end
+    
 # For some of our methods, the modified spherical Bessel functions are also necessary and the same principles apply.
 
-function i0(x::T) where {T<:Number}
+function i0(x::T)::float(T) where {T <: Union{AbstractFloat, Integer, Complex{<:AbstractFloat}, Complex{<:Integer}}}
     if iszero(x)
         return one(x)
     else
@@ -68,7 +117,7 @@ function i0(x::T) where {T<:Number}
     end
 end
 
-function di0(x::T) where {T<: Number}
+function di0(x::T)::float(T) where {T <: Union{AbstractFloat, Integer, Complex{<:AbstractFloat}, Complex{<:Integer}}}
     if iszero(x)
         return zero(x)
     else
@@ -76,7 +125,7 @@ function di0(x::T) where {T<: Number}
     end
 end
 
-function d2i0(x::T) where {T<: Number}
+function d2i0(x::T)::float(T) where {T <: Union{AbstractFloat, Integer, Complex{<:AbstractFloat}, Complex{<:Integer}}}
     if iszero(x)
         return one(x)/3
     else
@@ -84,7 +133,7 @@ function d2i0(x::T) where {T<: Number}
     end
 end
 
-function d3i0(x::T) where {T<:Number}
+function d3i0(x::T)::float(T) where {T <: Union{AbstractFloat, Integer, Complex{<:AbstractFloat}, Complex{<:Integer}}}
     if iszero(x)
         return zero(x)
     else
@@ -95,3 +144,52 @@ end
 @scalar_rule(d2i0(x), (d3i0(x)))
 @scalar_rule(di0(x), (d2i0(x)))
 @scalar_rule(i0(x), (di0(x)))
+
+# Dual implementations for the modified spherical Bessel functions for compatibility with ForwardDiff.jl.
+
+function i0(xdx::Dual{T}) where {T}
+    x = value(xdx)
+    dx = partials(xdx)
+    return Dual{T}(i0(x), di0(x)*dx)
+end
+
+function di0(xdx::Dual{T}) where {T}
+    x = value(xdx)
+    dx = partials(xdx)
+    return Dual{T}(di0(x), d2i0(x)*dx)
+end
+
+function d2i0(xdx::Dual{T}) where {T}
+    x = value(xdx)
+    dx = partials(xdx)
+    return Dual{T}(d2i0(x), d3i0(x)*dx)
+end
+
+# Complex dual implementation
+
+function i0(zdz::Complex{D}) where {D<:Dual}
+    z = value(zdz.re) + im*value(zdz.im)
+    dz_re = partials(zdz.re)
+    dz_im = partials(zdz.im)
+    j = i0(z)
+    dj = di0(z)
+    return D(j.re, dj.re*dz_re - dj.im*dz_im) + im*D(j.im, dj.re*dz_im + dj.im*dz_re)
+end
+
+function di0(zdz::Complex{D}) where {D<:Dual}
+    z = value(zdz.re) + im*value(zdz.im)
+    dz_re = partials(zdz.re)
+    dz_im = partials(zdz.im)
+    j = di0(z)
+    dj = d2i0(z)
+    return D(j.re, dj.re*dz_re - dj.im*dz_im) + im*D(j.im, dj.re*dz_im + dj.im*dz_re)
+end
+
+function d2i0(zdz::Complex{D}) where {D<:Dual}
+    z = value(zdz.re) + im*value(zdz.im)
+    dz_re = partials(zdz.re)
+    dz_im = partials(zdz.im)
+    j = d2i0(z)
+    dj = d3i0(z)
+    return D(j.re, dj.re*dz_re - dj.im*dz_im) + im*D(j.im, dj.re*dz_im + dj.im*dz_re)
+end

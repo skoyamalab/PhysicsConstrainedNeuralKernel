@@ -80,8 +80,9 @@ end
 
 function (a::FixedMultiDirectionSFKernel)(X1::AbstractMatrix{<:Number}, X2::AbstractMatrix{<:Number})::AbstractMatrix
    D = length(a.γ)
-   @tullio ΔX[t, b1, b2] := X1[t, b1] - X2[t, b2]
-   d, B1, B2 = size(ΔX)
+   d, B1 = size(X1)
+   B2 = size(X2, 2)
+   ΔX = reshape(X1, :, B1, 1) .- reshape(X2, :, 1, B2)
    return reshape(sum(j0.(sqrt.(reshape(sum((repeat(reshape(a.k* ΔX, (d, 1, B1, B2)), 1, D, 1, 1) -im * repeat(reshape(a.v .* a.β', (d, D, 1, 1)), 1, 1, B1, B2)).^2, dims=1), D, B1, B2))) .* repeat(reshape(a.γ ./ i0.(a.β), (D, 1, 1)), 1, B1, B2), dims=1), (B1, B2))
 end
 
@@ -188,12 +189,13 @@ end
 
 function (a::FixedβMultiDirectionSFKernel)(X1::AbstractMatrix{<:Number}, X2::AbstractMatrix{<:Number})
   D = length(a.γ)
-  @tullio ΔX[t, b1, b2] := X1[t, b1] - X2[t, b2]
-  d, B1, B2 = size(ΔX)
+  d, B1 = size(X1)
+  B2 = size(X2, 2)
+  ΔX = reshape(X1, :, B1, 1) .- reshape(X2, :, 1, B2)
   γβ = reshape(a.γ ./ i0.(a.β), (D, 1, 1))
   kΔxβ = sum(abs2, a.k*ΔX, dims=1) .- reshape(sum(abs2, a.v .* a.β', dims=1), (D, 1, 1))
   iβ = reshape(sum(identity, reshape(a.k* ΔX, (d, 1, B1, B2)) .* reshape(a.v .* a.β', (d, D, 1, 1)), dims=1), (D, B1, B2))
-  jkΔxβ = j0.(sqrt.(kΔxβ .- iβ*im))
+  jkΔxβ = j0.(sqrt.(kΔxβ .- 2*iβ*im))
   return reshape(sum(jkΔxβ .* γβ, dims=1), (B1, B2))
 end
 
@@ -286,8 +288,9 @@ end
 
 function (a::VariableMultiDirectionSFKernel)(X1::AbstractMatrix{<:Number}, X2::AbstractMatrix{<:Number})::AbstractMatrix
    D = length(a.γ)
-   @tullio ΔX[t, b1, b2] := X1[t, b1] - X2[t, b2]
-   d, B1, B2 = size(ΔX)
+   d, B1 = size(X1)
+   B2 = size(X2)
+   ΔX = reshape(X1, :, B1, 1) - reshape(X2, :, 1, B2)
    β = sqrt.(reshape(sum(abs2, a.β, dims=1), :))
    return reshape(sum(j0.(sqrt.(reshape(sum((repeat(reshape(a.k* ΔX, (d, 1, B1, B2)), 1, D, 1, 1) -im * repeat(reshape(a.β, (d, D, 1, 1)), 1, 1, B1, B2)).^2, dims=1), D, B1, B2))) .* repeat(reshape(a.γ ./ i0.(β), (D, 1, 1)), 1, B1, B2), dims=1), (B1, B2))
 end

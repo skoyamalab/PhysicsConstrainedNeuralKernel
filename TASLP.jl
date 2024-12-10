@@ -2,8 +2,6 @@
 using BenchmarkTools
 # Libraries needed to compile the PCNK module. The overhead can be eliminated by performing static compilation.
 using GenericLinearAlgebra, LinearAlgebra, Polynomials, SpecialFunctions, ArrayAllocators, SphericalHarmonics, KernelFunctions, ChainRules, JLD2,Lebedev, Functors, Optimization, Optimisers, FFTW, Flux, JLD2, KernelAbstractions, OrdinaryDiffEq
-using CUDA
-using Tullio
 using OrdinaryDiffEq, SciMLSensitivity
 # Find current directory.
 DIR = @__DIR__
@@ -60,8 +58,8 @@ Nx = size(Χ00, 1)
 # Testing microphone positions on GPU for faster deployment.
 X = T.(mics_xyz)
 X_val = T.(mics_val)
-X_gpu = T.(mics_xyz)|>gpu
-X_val_gpu = T.(mics_val)|>gpu
+# X_gpu = T.(mics_xyz)|>gpu
+# X_val_gpu = T.(mics_val)|>gpu
 
 
 # Much like MATLAB, it is faster in Julia to prealocate values that will be stored.
@@ -142,18 +140,20 @@ using OptimizationOptimJL, ForwardDiff
     χ = Float64.(Χ00[:, f])
     χ[15:28] /= sum(χ[15:28])
     # Define loss function for optimization
-    loss(χ, y) = ℓ(X, y, κ, χ)
-    # This function 
-    # Define optimization function as well as what method of differentiation will be used and the constraints.
-    func = Optimization.OptimizationFunction(loss,
-    Optimization.AutoZygote(),
-    cons = cons!)
-    # Define the optimization problem, which includes the function that must be optimized and the lower and upper bounds of the constraint.
-    prob = Optimization.OptimizationProblem(func, χ, y, lcons = lcons, ucons=ucons)
-    # Derive a solution using an appropriate optimizer.
-    sol = Optimization.solve(prob, IPNewton())
-    # The solution object can be treated as a vector and we can now extract its value.
-    χ = T.(sol)
+    @suppress begin
+        loss(χ, y) = ℓ(X, y, κ, χ)
+        # This function 
+        # Define optimization function as well as what method of differentiation will be used and the constraints.
+        func = Optimization.OptimizationFunction(loss,
+        Optimization.AutoZygote(),
+        cons = cons!)
+        # Define the optimization problem, which includes the function that must be optimized and the lower and upper bounds of the constraint.
+        prob = Optimization.OptimizationProblem(func, χ, y, lcons = lcons, ucons=ucons)
+        # Derive a solution using an appropriate optimizer.
+        sol = Optimization.solve(prob, IPNewton())
+        # The solution object can be treated as a vector and we can now extract its value.
+        χ = T.(sol)
+    end
     # Eliminate any numerical resquice placed by the optimizer
     χ[abs.(χ) .< eps(T)] .= zero(T)
     χ[15:28][χ[15:28] .< eps(T)] .=0
@@ -179,7 +179,7 @@ end
 err_prop_0 = copy(err_prop)
 coeffs_prop_0 = copy(coeffs_prop)
 # Refine the grid and increase system complexity without changing the parameter count.
-resample(κ_prop.NeuralKernel, 17)
+resample(κ_prop.NeuralKernel, 19)
 # Then we recalculate the errors
 for f = 1:length(freqs)
     k = ks[f]

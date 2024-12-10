@@ -1,18 +1,18 @@
 module PCNK
 dir = @__DIR__
 src = string(dir, "/src")
-using GenericLinearAlgebra, LinearAlgebra, Polynomials, SpecialFunctions, ArrayAllocators, SphericalHarmonics, KernelFunctions, ChainRules, JLD2,Lebedev, Functors, Optimisers, FFTW, Flux, KernelAbstractions, OrdinaryDiffEq, SciMLSensitivity
+using GenericLinearAlgebra, LinearAlgebra, SpecialFunctions, ArrayAllocators, KernelFunctions, ChainRules, JLD2,Lebedev, Functors, Optimisers, FFTW, Flux, KernelAbstractions, OrdinaryDiffEq, SciMLSensitivity
 #Uncomment if not using CUDA. While the code is agnostic to it, CUDA is the only GPU framework the library has been tested on.
-using CUDA
-using Tullio
 using KernelFunctions: Kernel
 using ChainRules: @ignore_derivatives, @scalar_rule
 using Functors: @functor
 using Optimisers: Restructure
 import Optimisers: trainable
+using ForwardDiff
+using ForwardDiff: Dual, value, partials
 
 export ISFKernel, UniformKernel, PlaneWaveKernel, DirectionalKernel,
-       MultiDirectionalKernel, NeuralWeightPlaneWaveKernel, DirectedResidualKernel, PlaneWaveCompositeKernel,
+       MultiDirectionalKernel, NeuralWeightPlaneWaveKernel, DirectedResidualKernel, PlaneWaveCompositeKernel, NeuralAugmentedKernel,
        resample, j0
 
 abstract type ISFKernel{T<:AbstractFloat} <: KernelFunctions.Kernel end # Interior sound field kernels

@@ -36,13 +36,16 @@ function (a::FixedDirectionPlaneWaveKernel)(x::AbstractVector{<:Number})
 end
 
 function (a::FixedDirectionPlaneWaveKernel)(X::AbstractMatrix{<:Number})::AbstractVector
-    @tullio (+) kx[d, b] := a.v[t, d] * X[t, b]
+    B = size(X, 2)
+    D = size(a.v, 2)
+    kx = reshape(sum(reshape(a.v, :, D, 1)  .* reshape(X, :, 1, B), dims=1), :, B)
     return reshape(sum(a.w .* exp.(im*a.k*kx), dims=1), :)
 end
 
 function (a::FixedDirectionPlaneWaveKernel)(X::AbstractArray{<:Number, 3})::AbstractMatrix
-    @tullio (+) kx[d, b1, b2] := a.v[t, d] * X[t, b1, b2]
     _, B1, B2 = size(X)
+    D = size(a.v, 2)
+    kx = reshape(sum(reshape(a.v, :, D, 1, 1) .* reshape(X, :, 1, B1, B2), dims=1), D, B1, B2)
     return reshape(sum(a.w .* exp.(im*a.k*kx), dims=1), (B1, B2))
 end
 
@@ -52,19 +55,26 @@ function (a::FixedDirectionPlaneWaveKernel)(x1::AbstractVector{<:Number}, x2::Ab
 end
 
 function (a::FixedDirectionPlaneWaveKernel)(X1::AbstractMatrix{<:Number}, x2::AbstractVector{<:Number})::AbstractVector
-    X = X1 .-x2 
-    @tullio (+) Δx[d, b] := a.v[t, d] * X[t, b]
+    X = X1 .-x2
+    D = size(a.v, 2)
+    B = size(X, 2) 
+    Δx = reshape(sum(reshape(a.v, :, D, 1) * reshape(X, :, 1, B), dims=1), D, B)
     return reshape(sum(a.w .* exp.(im*a.k*Δx), dims=1), :)
 end
 
 function (a::FixedDirectionPlaneWaveKernel)(x1::AbstractVector{<:Number}, X2::AbstractMatrix{<:Number})::AbstractVector
     X = x1 .-X2 
-    @tullio (+) Δx[d, b] := a.v[t, d] * X[t, b]
+    D = size(a.v, 2)
+    B = size(X, 2) 
+    Δx = reshape(sum(reshape(a.v, :, D, 1) * reshape(X, :, 1, B), dims=1), D, B)
     return reshape(sum(a.w .* exp.(im*a.k*Δx), dims=1), :)
 end
 
 function (a::FixedDirectionPlaneWaveKernel)(X1::AbstractMatrix{<:Number}, X2::AbstractMatrix{<:Number})::AbstractMatrix
-    @tullio (+) Δx[d, b1, b2] := a.v[t, d] * (X1[t, b1] - X2[t, b2])
+    D = size(a.v, 2)
+    B1 = size(X1, 2)
+    B2 = size(X2, 2)
+    Δx = reshape(sum(reshape(a.v, :, D, 1, 1) .* (reshape(X1, :, 1, B1, 1) .- reshape(X2, :, 1, 1, B2)), dims=1), D, B1, B2)
     _, B1, B2 = size(Δx)
     return reshape(sum(a.w .* exp.(im*a.k*Δx), dims=1), (B1, B2))
 end
@@ -114,13 +124,16 @@ function (a::VariableDirectionPlaneWaveKernel)(x::AbstractVector{<:Number})
 end
 
 function (a::VariableDirectionPlaneWaveKernel)(X::AbstractMatrix{<:Number})::AbstractVector
-    @tullio (+) kx[d, b] := a.v[t, d] * X[t, b]
+    D = size(a.v, 2)
+    B = size(X, 2)
+    kx = reshape(sum(reshape(a.v, :, D, 1) .* reshape(X, :, 1, B), dims=1), D, B)
     return reshape(sum(a.w .* exp.(im*a.k*kx), dims=1), :)
 end
 
 function (a::VariableDirectionPlaneWaveKernel)(X::AbstractArray{<:Number, 3})::AbstractMatrix
-    @tullio (+) kx[d, b1, b2] := a.v[t, d] * X[t, b1, b2]
+    D = size(a.v, 2)
     _, B1, B2 = size(X)
+    kx = reshape(sum(reshape(a.v, :, D, 1, 1) .* reshape(X, :, 1, B1, B2), dims=1), D, B1, B2)
     return reshape(sum(a.w .* exp.(im*a.k*kx), dims=1), (B1, B2))
 end
 
@@ -131,18 +144,25 @@ end
 
 function (a::VariableDirectionPlaneWaveKernel)(X1::AbstractMatrix{<:Number}, x2::AbstractVector{<:Number})::AbstractVector
     X = X1 .-x2 
-    @tullio (+) Δx[d, b] := a.v[t, d] * X[t, b]
+    D = size(a.v, 2)
+    B = size(X, 2)
+    Δx = reshape(sum(reshape(a.v, :, D, 1) .* reshape(X, :, 1, B), dims=1), D, B)
     return reshape(sum(a.w .* exp.(im*a.k*Δx), dims=1), :)
 end
 
 function (a::VariableDirectionPlaneWaveKernel)(x1::AbstractVector{<:Number}, X2::AbstractMatrix{<:Number})::AbstractVector
-    X = x1 .-X2 
-    @tullio (+) Δx[d, b] := a.v[t, d] * X[t, b]
+    X = x1 .-X2
+    D = size(a.v, 2)
+    B = size(X, 2)
+    Δx = reshape(sum(reshape(a.v, :, D, 1) .* reshape(X, :, 1, B), dims=1), D, B)
     return reshape(sum(a.w .* exp.(im*a.k*Δx), dims=1), :)
 end
 
 function (a::VariableDirectionPlaneWaveKernel)(X1::AbstractMatrix{<:Number}, X2::AbstractMatrix{<:Number})::AbstractMatrix
-    @tullio (+) Δx[d, b1, b2] := a.v[t, d] * (X1[t, b1] - X2[t, b2])
+    D = size(a.v, 2)
+    B1 = size(X1, 2)
+    B2 = size(X2, 2)
+    Δx = reshape(sum(reshape(a.v, :, D, 1, 1) .* (reshape(X1, :, 1, B1, 1) .- reshape(X2, :, 1, 1, B2)), dims=1), D, B1, B2)
     _, B1, B2 = size(Δx)
     return reshape(sum(a.w .* exp.(im*a.k*Δx), dims=1), (B1, B2))
 end
@@ -283,14 +303,17 @@ end
 
 function (a::NeuralWeightPlaneWaveKernel)(X::AbstractMatrix{<:Number})::AbstractVector
     W = reshape(a.W(a.k * a.v), :)
-    @tullio (+) Δx[d, b] := a.v[t, d] * X[t, b]
+    D = length(W)
+    B = size(X, 2)
+    Δx = reshape(sum(reshape(a.v, :, D, 1) .* reshape(X, :, 1, B), dims=1), D, B)
     return reshape(sum(W.* a.w .* exp.(im*a.k*Δx), dims=1),:)
 end
 
 function (a::NeuralWeightPlaneWaveKernel)(ΔX::AbstractArray{<:Number, 3})::AbstractMatrix
     W = reshape(a.W(a.k * a.v), :)
-    @tullio (+) Δx[d, b1, b2] := a.v[t, d] * ΔX[t, b1, b2]
-    D, B1, B2 = size(Δx)
+    D = length(W)
+    _, B1, B2 = size(ΔX)
+    Δx = reshape(sum(reshape(a.v, :, D, 1, 1) .* reshape(ΔX, :, 1, B1, B2), dims=1), D, B1, B2)
     return reshape(sum(repeat(reshape(W.* a.w, (D, 1, 1)), 1, B1, B2) .* exp.(im*a.k*Δx), dims=1),(B1, B2))
 end
 
@@ -302,21 +325,27 @@ end
 function (a::NeuralWeightPlaneWaveKernel)(x1::AbstractVector{<:Number}, X2::AbstractMatrix{<:Number})::AbstractVector
     W = reshape(a.W(a.k * a.v), :)
     ΔX = x1 .- X2
-    @tullio (+) Δx[d, b] := a.v[t, d] * ΔX[t, b]
+    D = length(W)
+    B = size(ΔX)
+    Δx = reshape(sum(reshape(a.v, :, D, 1) .* reshape(ΔX, :, 1, B), dims=1), D, B)
     return reshape(sum(W.* a.w .* exp.(im*a.k*Δx), dims=1),:)
 end
 
 function (a::NeuralWeightPlaneWaveKernel)(X1::AbstractMatrix{<:Number}, x2::AbstractVector{<:Number})::AbstractVector
     W = reshape(a.W(a.k * a.v), :)
     ΔX = X1 .- x2
-    @tullio (+) Δx[d, b] := a.v[t, d] * ΔX[t, b]
+    D = length(W)
+    B = size(ΔX)
+    Δx = reshape(sum(reshape(a.v, :, D, 1)  .* reshape(ΔX, :, 1, B), dims=1), D, B)
     return reshape(sum(W.* a.w .* exp.(im*a.k*Δx), dims=1),:)
 end
 
 function (a::NeuralWeightPlaneWaveKernel)(X1::AbstractMatrix{<:Number}, X2::AbstractMatrix{<:Number})::AbstractMatrix
     W = reshape(a.W(a.k * a.v), :)
-    @tullio (+) Δx[d, b1, b2] := a.v[t, d] * (X1[t, b1]- X2[t, b2])
-    D, B1, B2 = size(Δx)
+    D = length(W)
+    B1 = size(X1, 2)
+    B2 = size(X2, 2)
+    Δx = reshape(sum(identity, reshape(a.v, :, D, 1, 1) .* (reshape(X1, :, 1, B1, 1) .- reshape(X2, :, 1, 1, B2)), dims=1), D, B1, B2)
     return reshape(sum(repeat(reshape(W.* a.w, (D, 1, 1)), 1, B1, B2) .* exp.(im*a.k*Δx), dims=1),(B1, B2))
 end
 
