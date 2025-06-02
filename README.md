@@ -68,4 +68,4 @@ All of these operations are implemented without scalar indexing or mutations and
 
 ## Hands-on example
 
-The file SPM.jl shows how to instantiate and train our kernels by performing interpolation on a simulated sound created to have reverberation time of $400~\mathrm{ms}$. We contrast a fully adaptive physics-constrained neural kernel proposed in [this article](https://arxiv.org/abs/2408.14731) with a a kernel with a trainable residual sound field only. Both constitute fully Physics-constrained neural kernels.
+The file SPM.jl shows how to instantiate and train our kernels by performing interpolation on a simulated sound created to have reverberation time of $400~\mathrm{ms}$. We contrast a fully adaptive physics-constrained neural kernel proposed in [this article](https://arxiv.org/abs/2408.14731) with a a kernel with a trainable residual sound field only and a kernel that does not have any learnable components.
