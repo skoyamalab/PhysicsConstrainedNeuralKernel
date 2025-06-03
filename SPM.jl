@@ -274,6 +274,7 @@ plot(freqs[2:end],
       ytickfontsize = FS,
       ylabel = "NMSE (dB)"
       )
+savefig("SPM/NMSE.pdf")
 
 # The kernels can also be deployed on the GPU. Training can be performed as well on the GPU, but then second order methods cannot be used.
 # The kernels have only been tested on NVIDIA GPUs using CUDA.jl, however no operation makes explicit reference to it.
@@ -334,6 +335,7 @@ p_orig = heatmap(Δx,
                  )
                  plot!(xt, yt, 0, 2π, leg = false, aspect_ratio = :equal, lw = LW_MAX, color=:black)
                  plot!(xt, yt, 0, 2π, leg=false, aspect_ratio=:equal, lw=LW_min, color=:white, xlims = (-0.5, 0.5), ylims = (-0.5, 0.5), xticks = -0.4:0.4:0.4, yticks = -0.4:0.4:0.4)
+savefig(p_orig, "SPM/p_orig.pdf")
 
 p_uni = heatmap(Δx,
                  Δy,
@@ -354,6 +356,7 @@ p_uni = heatmap(Δx,
                  )
                  plot!(xt, yt, 0, 2π, leg = false, aspect_ratio = :equal, lw = LW_MAX, color=:black)
                  plot!(xt, yt, 0, 2π, leg=false, aspect_ratio=:equal, lw=LW_min, color=:white, xlims = (-0.5, 0.5), ylims = (-0.5, 0.5), xticks = -0.4:0.4:0.4, yticks = -0.4:0.4:0.4)
+savefig(p_uni, "SPM/p_uni.pdf")
 
 p_err_uni = heatmap(Δx,
                  Δy,
@@ -374,6 +377,7 @@ p_err_uni = heatmap(Δx,
                  )
                  plot!(xt, yt, 0, 2π, leg = false, aspect_ratio = :equal, lw = LW_MAX, color=:black)
                  plot!(xt, yt, 0, 2π, leg=false, aspect_ratio=:equal, lw=LW_min, color=:white, xlims = (-0.5, 0.5), ylims = (-0.5, 0.5), xticks = -0.4:0.4:0.4, yticks = -0.4:0.4:0.4)
+savefig(p_err_uni, "SPM/p_err_uni.pdf")
 
 p_pcnk = heatmap(Δx,
                  Δy,
@@ -394,6 +398,7 @@ p_pcnk = heatmap(Δx,
                  )
                  plot!(xt, yt, 0, 2π, leg = false, aspect_ratio = :equal, lw = LW_MAX, color=:black)
                  plot!(xt, yt, 0, 2π, leg=false, aspect_ratio=:equal, lw=LW_min, color=:white, xlims = (-0.5, 0.5), ylims = (-0.5, 0.5), xticks = -0.4:0.4:0.4, yticks = -0.4:0.4:0.4)
+savefig(p_pcnk, "SPM/p_pcnk.pdf")
 
 p_err_pcnk = heatmap(Δx,
                  Δy,
@@ -414,6 +419,7 @@ p_err_pcnk = heatmap(Δx,
                  )
                  plot!(xt, yt, 0, 2π, leg = false, aspect_ratio = :equal, lw = LW_MAX, color=:black)
                  plot!(xt, yt, 0, 2π, leg=false, aspect_ratio=:equal, lw=LW_min, color=:white, xlims = (-0.5, 0.5), ylims = (-0.5, 0.5), xticks = -0.4:0.4:0.4, yticks = -0.4:0.4:0.4)
+savefig(p_err_pcnk, "SPM/p_err_pcnk.pdf")
 
 p_prop = heatmap(Δx,
                  Δy,
@@ -434,6 +440,7 @@ p_prop = heatmap(Δx,
                  )
                  plot!(xt, yt, 0, 2π, leg = false, aspect_ratio = :equal, lw = LW_MAX, color=:black)
                  plot!(xt, yt, 0, 2π, leg=false, aspect_ratio=:equal, lw=LW_min, color=:white, xlims = (-0.5, 0.5), ylims = (-0.5, 0.5), xticks = -0.4:0.4:0.4, yticks = -0.4:0.4:0.4)
+savefig(p_prop, "SPM/p_prop.pdf")
 
 p_err_prop = heatmap(Δx,
                  Δy,
@@ -454,3 +461,4 @@ p_err_prop = heatmap(Δx,
                  )
                  plot!(xt, yt, 0, 2π, leg = false, aspect_ratio = :equal, lw = LW_MAX, color=:black)
                  plot!(xt, yt, 0, 2π, leg=false, aspect_ratio=:equal, lw=LW_min, color=:white, xlims = (-0.5, 0.5), ylims = (-0.5, 0.5), xticks = -0.4:0.4:0.4, yticks = -0.4:0.4:0.4)
+savefig(p_err_prop, "SPM/p_err_prop.pdf")
