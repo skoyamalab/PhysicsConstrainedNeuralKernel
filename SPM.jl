@@ -7,7 +7,7 @@ using OrdinaryDiffEq, SciMLSensitivity
 # Find current directory.
 DIR = @__DIR__
 # The script pressuposes the folder PCNK with the library is in the same directory as the script.
-include(string(DIR, "/PCNK/master.jl"))
+include(joinpath(DIR, "PCNK", "src", "PCNK.jl"))
 # Include module
 using .PCNK
 

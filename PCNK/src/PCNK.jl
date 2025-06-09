@@ -1,6 +1,5 @@
 module PCNK
-dir = @__DIR__
-src = string(dir, "/src")
+src = @__DIR__
 using GenericLinearAlgebra, LinearAlgebra, SpecialFunctions, ArrayAllocators, KernelFunctions, ChainRules, JLD2,Lebedev, Functors, Optimisers, FFTW, Flux, KernelAbstractions, OrdinaryDiffEq, SciMLSensitivity, Distributions
 #Uncomment if not using CUDA. While the code is agnostic to it, CUDA is the only GPU framework the library has been tested on.
 using KernelFunctions: Kernel

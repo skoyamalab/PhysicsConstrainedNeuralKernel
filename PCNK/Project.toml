@@ -1,0 +1,13 @@
+name = "PCNK"
+uuid = "e334d8f8-8466-4161-95e9-0eeb02f71344"
+authors = ["ribeiro-juliano <ribeiro-juliano@ieee.org>", "sh01k <koyama.shoichi@ieee.org>"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.11.5"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
