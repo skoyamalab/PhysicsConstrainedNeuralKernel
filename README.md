@@ -7,7 +7,7 @@ Sound field estimation based on physics-constrained neural kernels.
 This is a library for performing kernel interpolation using adaptive kernel functions that are always guaranteed to satisfy the Helmholtz equation, meaning they can be used to interpolate sound field pressure values without requiring any form of enforcement and can be trained using data-driven methods alone. The entire library is written in Julia and the kernel functions shown here were previously proposed in the following works:
 
 - J. G. C. Ribeiro, S. Koyama, R. Horiuchi, and H. Saruwatari, "Sound Field Estimation Based on Physics-Constrained Kernel Interpolation Adapted to Environment," IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2024, DOI: 10.1109/TASLP.2024.3467951. [[Paper]](https://doi.org/10.1109/TASLP.2024.3467951)
-- S. Koyama, J. G. C. Ribeiro, T. Nakamura, N. Ueno, and M. Pezzoli, "Physics-Informed Machine Learning For Sound Field Estimation," IEEE Signal Processing Magazine, 2025, DOI: 10.1109/MSP.2024.3465896. (in press) [[Preprint]](https://arxiv.org/abs/2408.14731)
+- S. Koyama, J. G. C. Ribeiro, T. Nakamura, N. Ueno, and M. Pezzoli, "Physics-Informed Machine Learning For Sound Field Estimation," IEEE Signal Processing Magazine, 2025, DOI: 10.1109/MSP.2024.3465896. [[Paper]](https://doi.org/10.1109/MSP.2024.3465896) [[Preprint]](https://arxiv.org/abs/2408.14731)
 
 ## Compiling the library
 
